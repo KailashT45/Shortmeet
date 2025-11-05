@@ -33,6 +33,22 @@
     
     <!-- Security headers -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; media-src 'self' blob:; connect-src 'self' ws: wss:;">
+    <script>
+      // Early bootstrap for environments that destructure from globalThis
+      (function() {
+        if (typeof window !== 'undefined') {
+          if (typeof window.globalThis === 'undefined') window.globalThis = window;
+          var keys = ['fetch','Request','Response','Headers'];
+          for (var i=0;i<keys.length;i++) {
+            var k = keys[i];
+            if (typeof window.globalThis[k] === 'undefined' && typeof window[k] !== 'undefined') {
+              window.globalThis[k] = window[k];
+            }
+          }
+          if (typeof window.self === 'undefined') window.self = window;
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
