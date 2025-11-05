@@ -2,6 +2,11 @@
 // This file should be imported before any other modules that use Node.js APIs
 
 // Global polyfill
+if (typeof globalThis === 'undefined') {
+  // Ensure globalThis is available for libraries that destructure
+  // { fetch, Request, Response, Headers } from globalThis
+  window.globalThis = window;
+}
 if (typeof global === 'undefined') {
   window.global = window;
 }
