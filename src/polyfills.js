@@ -2,10 +2,26 @@
 // This file should be imported before any other modules that use Node.js APIs
 
 // Global polyfill
+// Ensure globalThis and web fetch APIs are accessible for libraries that do
+// const { Request, Response, Headers, fetch } = globalThis
 if (typeof globalThis === 'undefined') {
-  // Ensure globalThis is available for libraries that destructure
-  // { fetch, Request, Response, Headers } from globalThis
   window.globalThis = window;
+}
+if (typeof window !== 'undefined') {
+  // Some bundlers/modules try to destructure from globalThis before these are set
+  const maybeCopy = (key) => {
+    if (typeof globalThis[key] === 'undefined' && typeof window[key] !== 'undefined') {
+      globalThis[key] = window[key];
+    }
+  };
+  maybeCopy('fetch');
+  maybeCopy('Request');
+  maybeCopy('Response');
+  maybeCopy('Headers');
+  if (typeof self === 'undefined') {
+    // Align with web worker environments that expect self
+    window.self = window;
+  }
 }
 if (typeof global === 'undefined') {
   window.global = window;
